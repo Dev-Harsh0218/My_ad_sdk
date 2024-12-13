@@ -5,6 +5,7 @@ const resgisterAppController = require('../controllers/registerAppController');
 //register a new-app
 router.post('/register-app',resgisterAppController.registerApp);
 //get all ads
-router.post('/getAllApps',resgisterAppController.getAllApps);
+router.get('/getAllApps',resgisterAppController.getAllApps);
+
 
 module.exports = router;

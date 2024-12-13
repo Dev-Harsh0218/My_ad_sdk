@@ -22,6 +22,21 @@ const registerAppRepository = {
         }
     },
 
+    async getAppByPackageName(app_apk_key,packageName) {
+        try {
+            const app = await Registered_apk_key.findOne({
+                where: {app_apk_key: app_apk_key, app_package_name: packageName }
+            });
+            if (!app) {
+                throw new Error('App not found');
+            }
+            return app;
+        } catch (error) {
+            logger.error(`Get App By Package Name Error Repository: ${error.message}`);
+            throw error;
+        }
+    },
+
     async getAppById(id) {
         try {
             const app = await Registered_apk_key.findByPk(id);

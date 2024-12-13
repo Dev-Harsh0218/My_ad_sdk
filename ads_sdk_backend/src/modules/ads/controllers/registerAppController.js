@@ -8,6 +8,7 @@ const registerAppController = {
             const result = await registerAppService.registerApp(appData);
             res.status(201).json({
                 success: true,
+                message:result.existing? 'App already Registered' : 'App registered successfully',
                 data: result
             });
         } catch (error) {

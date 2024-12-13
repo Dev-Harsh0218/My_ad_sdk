@@ -1,6 +1,7 @@
 
 const RegisterAppRepository = require("../repositories/registerAppRepository");
 const logger = require('../../../core/utils/logger');
+const e = require("cors");
 
 const registerAppService = {
     async registerApp(appData) {
@@ -12,7 +13,24 @@ const registerAppService = {
             if (missingFields.length > 0) {
                 throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
             }
+            //checking for existing app
+            let existingApp;
+            try{
+                existingApp = await RegisterAppRepository.getAppByPackageName(appData.app_apk_key, appData.app_package_name);
+            }catch(error){
+                if (error.message === 'App not found') {
+                    existingApp = null
+                }else{
+                    throw error;
+                }
+            }
 
+            if(existingApp){
+                return{
+                    existing:true,
+                    data:existingApp
+                }
+            }
             // Add data sanitization
             const sanitizedAppData = {
                 ...appData,

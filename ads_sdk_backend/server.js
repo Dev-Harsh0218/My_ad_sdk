@@ -7,6 +7,7 @@ const {PORT} = require('./src/config/env');
 //importing routes here
 const adRoutes = require('./src/modules/ads/routes/adRoutes');
 const appRoutes = require('./src/modules/ads/routes/registerAppRoutes');
+const runningAdsRoutes = require('./src/modules/ads/routes/runningAdsRoutes');
 //initializing the app
 const app = express();
 
@@ -30,6 +31,8 @@ app.use('/videos',express.static(path.join(__dirname,'/public/uploads/videos')))
 app.use('/api/v1/ads',adRoutes);
 //app routes
 app.use('/api/v1/apps',appRoutes);
+//running-ads Routes
+app.use('/api/v1/run-ads',runningAdsRoutes);
 
 //health-ping
 app.get('/health-ping',(req,res) => res.status(200).json({success:"this is my server here and this is the health ping here"}));
