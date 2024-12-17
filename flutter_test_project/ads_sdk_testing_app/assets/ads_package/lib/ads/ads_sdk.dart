@@ -14,7 +14,7 @@ class AdsSdk {
   static String appName = '';
   static String appVersion = '';
   static String packageName = '';
-
+  static String App_key ='';
   // Initialize the SDK
   static Future<void> initialize(String serverurl, String apkUniqueKey,
       String appName, String appVersion, String packageName) async {
@@ -56,10 +56,11 @@ class AdsSdk {
   }
 
   static Future<void> registerApp(String apkUniqueKey, String serverUrl,String appName,String packageName,String appVersion) async {
-    debugPrint('===============registering your app======================');
-    String url = 'http"//$serverUrl/registerApp';
+    String url = 'http://$serverUrl/api/v1/apps/register-app';
+    debugPrint('this is the server url here $url');
     final response = await http.post(
       Uri.parse(url),
+      headers:{'Content-type':'application/json'},
       body: jsonEncode({
         'app_name': appName,
         'app_apk_key': apkUniqueKey,
@@ -68,7 +69,7 @@ class AdsSdk {
       }),
     );
     if (response.statusCode == 200) {
-      debugPrint("app registered successfully");
+      debugPrint("Response: ${json.decode(response.body)['message']}");
     } else {
       debugPrint('Error Registering your app: ${response.body}');
     }

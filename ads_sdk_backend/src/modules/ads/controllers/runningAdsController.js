@@ -17,10 +17,7 @@ const runningAdsController = {
 
     async createMultipleRunnningAds(req, res) {
         try {
-            console.log("i m inside here in the controller")
             const {app_id,adslistData} = req.body
-            console.log('==========================================\n',req.body)
-            console.log(`app_id ${app_id} and adsListData ${adslistData}`)
             if (!app_id || !adslistData) {
                 throw new Error('App ID and Ad Id list are required');
             }
@@ -37,6 +34,21 @@ const runningAdsController = {
             });
         }
     },
+
+    async getAllRunningAds(req, res) {
+        try{
+            const ads = await runningAdsService.getAllRunningAds();
+            res.status(200).json({
+                success: true,
+                data: ads
+            });
+        }catch(error){
+            res.status(400).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }, 
 
     async getRunningAdsByAppId(req, res) {
         try {

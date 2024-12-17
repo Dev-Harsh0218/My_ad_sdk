@@ -3,14 +3,14 @@ const registerAppService = require('../services/registerAppService');
 const registerAppController = {
     async registerApp(req, res) {
         try {
-            console.log('req.body \n===============================\n',req.body);
             const appData = req.body;
             const result = await registerAppService.registerApp(appData);
-            res.status(201).json({
+            res.status(200).json({
                 success: true,
                 message:result.existing? 'App already Registered' : 'App registered successfully',
                 data: result
             });
+            
         } catch (error) {
             res.status(400).json({
                 success: false,

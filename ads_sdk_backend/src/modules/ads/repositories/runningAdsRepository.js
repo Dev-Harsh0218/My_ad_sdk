@@ -15,9 +15,22 @@ const runningAdsRepository = {
 
     async createMultipleRunningAds(runningAdData) {
         try {
-            return await Running_ad.bulkCreate(runningAdData);
+            return await Running_ad.bulkCreate(runningAdData,{validate:true,ignoreDuplicates:true});
         } catch (error) {
             logger.error(`Create Multiple Running Ads Error Repository: ${error.message}`);
+            throw error;
+        }
+    },
+
+    async getAllRunningAds() {
+        try {
+            return await Running_ad.findAll({ where:{
+                is_active: true
+            },
+            include:[{model:Ad},{model:Registered_apk_key}]
+            });
+        } catch (error) {
+            logger.error(`Get All Running Ads Error Repository: ${error.message}`);
             throw error;
         }
     },

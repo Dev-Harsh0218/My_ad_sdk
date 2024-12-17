@@ -3,7 +3,7 @@ import 'package:ads_sdk_application/ads.dart' as ads_sdk_application;
 
 void main() {
   runApp(const MyApp());
-  ads_sdk_application.AdsSdk.initialize('192.168.0.17:4000','ad_sdk_testing','Flutter App','1.0.0','com.test.harsh');
+  ads_sdk_application.AdsSdk.initialize('192.168.0.28:8000','Testing_Application','MyFlutterApp','1.0.0','com.testing.Application');
 }
 
 class MyApp extends StatelessWidget {
@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // state is not lost during the reload. To reset the state, use hot
         // restart instead.
-        //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

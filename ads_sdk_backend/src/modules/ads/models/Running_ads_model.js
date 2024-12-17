@@ -54,7 +54,8 @@ const Running_ad = sequelize.define('Running_ads', {
     indexes: [
         { unique: true, fields: ['id'] },
         { fields: ['app_id'] },
-        { fields: ['ad_id'] }
+        { fields: ['ad_id'] },
+        {unique: true, fields: ['app_id', 'ad_id']}
     ]
 });
 

@@ -14,30 +14,9 @@ const runningAdsService = {
             throw error;
         }
     },
-    // async createMultipleRunningAds(app_id, adsListData) {
-    //     try {
-    //         console.log("Inside service - creating multiple running ads");
-    //         if (!app_id || !adsListData || !Array.isArray(adsListData)) {
-    //             throw new Error('Invalid input data');
-    //         }
-
-    //         const runningAdsData = adsListData.map(ad => ({
-    //             app_id: app_id,
-    //             ad_id: ad.id,
-    //             custom: ad.custom || {}
-    //         }));
-
-    //         return await runningAdsRepository.createBulkRunningAds(runningAdsData);
-    //     } catch (error) {
-    //         logger.error(`Service - Create Multiple Running Ads Error: ${error.message}`);
-    //         throw error;
-    //     }
-    // },
 
     async createMultipleRunningAds(app_id, adsListData) {
         try{
-            console.log('\ninside the service function here\n');
-            console.log("==========================================\n",app_id,adsListData)
             if(!app_id || !adsListData || !Array.isArray(adsListData)) {
                 throw new Error('App ID and Ad Id list are required');
             }
@@ -46,10 +25,18 @@ const runningAdsService = {
                 app_id: app_id,
                 ad_id: ad.id
             }));
-            console.log("Running Ad Data",runningAdData);
             return await runningAdsRepository.createMultipleRunningAds(runningAdData);
         } catch(error){
             logger.error(`Service - Create Multiple Running Ads Error: ${error.message}`);
+            throw error;
+        }
+    },
+
+    async getAllRunningAds() {
+        try {
+            return await runningAdsRepository.getAllRunningAds();
+        } catch (error) {
+            logger.error(`Service - Get All Running Ads Error: ${error.message}`);
             throw error;
         }
     },

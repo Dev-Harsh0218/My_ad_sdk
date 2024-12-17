@@ -1,7 +1,7 @@
 name: ads_sdk_application
 description: this is an ads application.
 version: 1.0.2
-homepage: null
+# homepage: null
 
 environment:
   sdk: '>=3.1.0 <4.0.0'
@@ -22,7 +22,7 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 # The following section is specific to Flutter packages.
-flutter: null
+# flutter: null
 
 # To add assets to your package, add an assets section, like this:
 # assets:
