@@ -1,4 +1,5 @@
 const runningAdsService = require('../services/runningAdsService');
+
 const runningAdsController = {
     async createRunningAd(req, res) {
         try {
@@ -50,6 +51,23 @@ const runningAdsController = {
         }
     }, 
 
+    async incrementImpressionCount(req,res){
+        try{
+            const {running_ad_id} = req.body;
+            const result = await runningAdsService.incrementImpressionCount(running_ad_id);
+            console.log(result);
+            res.status(200).json({
+                success: true,
+                data: result
+            });
+        }catch (error){
+            res.status(400).json({
+                success: false,
+                error: error.message
+            });
+        }
+    },
+
     async getRunningAdsByAppId(req, res) {
         try {
             const { appId } = req.params;
@@ -68,7 +86,7 @@ const runningAdsController = {
 
     async deactivateRunningAd(req, res) {
         try {
-            const { id } = req.params;
+            const { id } = req.body;
             await runningAdsService.deactivateRunningAd(id);
             res.status(200).json({
                 success: true,

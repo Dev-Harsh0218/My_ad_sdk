@@ -1,10 +1,16 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, memo } from "react";
 import { serverUrl } from "./const";
 import { MdDelete } from "react-icons/md";
+import { toast } from "react-hot-toast";
 
-const AdsData = ({refresh}) => {
+const AdsData = memo(({ refresh }) => {
   const [adsListData, setAdsListData] = useState([]);
 
+  /**
+   * Fetches the data for all running ads from the server and updates the `adsListData` state.
+   *
+   * This function is memoized using `useCallback` to avoid unnecessary re-fetching of data.
+   */
   const fetchAdsData = useCallback(async () => {
     try {
       const response = await fetch(
@@ -16,46 +22,68 @@ const AdsData = ({refresh}) => {
           },
         }
       );
+      const data = await response.json();
       if (response.ok) {
-        const data = await response.json();
         setAdsListData(data.data);
+      } else {
+        console.error(data.error);
       }
     } catch (error) {
       console.error("Error fetching ads:", error);
     }
   }, []);
 
-  const handleDelete = useCallback(async (ApkUniqueKey, adItem) => {
+  /**
+   * Fetches the data for all running ads from the server and updates the `adsListData` state whenever the `refresh` prop or `fetchAdsData` function changes.
+   */
+  useEffect(() => {
+    fetchAdsData();
+  }, [refresh, fetchAdsData]);
+
+  /**
+   * Deletes a running ad from the server.
+   *
+   * @param{string} running_ad_id - The ID of the running ad to be deleted. inside the body of the request
+   * @returns {Promise<void>} - A Promise that resolves when the ad is successfully deleted, or rejects with an error.
+   */
+  const handleDelete = useCallback(async (running_ad_id) => {
     try {
-      const response = await fetch(`http://${serverUrl}/deleteAdItem`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ApkUniqueKey, adItem }),
-      });
+      const response = await fetch(
+        `http://${serverUrl}/api/v1/run-ads/delete-running-ad`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: running_ad_id }),
+        }
+      );
       const data = await response.json();
-      
-      if (data.message === "Ad item deleted successfully") {
-        setAdsListData(prevData =>
-          prevData.map(item =>
-            item.ApkUniqueKey === ApkUniqueKey
-              ? {
-                  ...item,
-                  AdslistData: item.AdslistData.filter(ad => ad !== adItem),
-                }
-              : item
-          )
-        );
+      if (data.message === "Ad deactivated successfully") {
+        toast.success("Ad Deactivated successfully");
+        fetchAdsData();
+      } else {
+        console.error("Error deleting ad item:", data);
       }
     } catch (error) {
       console.error("Error:", error);
     }
+  }, [fetchAdsData]);
+
+  const trimExtension = useCallback((str) => {
+    const lastDotIndex = str.lastIndexOf(".");
+    return lastDotIndex === -1 ? str : str.slice(0, lastDotIndex);
   }, []);
 
-  useEffect(() => {
-    fetchAdsData();
-  }, [refresh, fetchAdsData]);
+  const AdImage = memo(({ path }) => (
+    <div className="w-10 bg-black">
+      <div className="flex items-center justify-center hover:scale-150 transition-transform transform-gpu duration-300">
+        <a href={`http://${serverUrl}/images/${path}`} target="_blank" rel="noopener noreferrer">
+          <img src={`http://${serverUrl}/images/${path}`} alt="Ad" loading="lazy" />
+        </a>
+      </div>
+    </div>
+  ));
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
@@ -73,58 +101,40 @@ const AdsData = ({refresh}) => {
             </tr>
           </thead>
           <tbody>
-            {adsListData.map((dataItem, index) => (
-              <TableRow
-                key={dataItem.app_id}
-                dataItem={dataItem}
-                index={index}
-                handleDelete={handleDelete}
-                serverUrl={serverUrl}
-              />
+            {adsListData.map((dataItem,index) => (
+              <tr
+                key={index}
+                className={`w-[80%] ${
+                  index % 2 === 0 ? "bg-[#E0F1FB]" : "bg-white"
+                }`}
+              >
+                <td className="text-center">
+                  {dataItem.Registered_apk_key.app_name}
+                </td>
+                <td className="text-left">{dataItem.Ad.app_link}</td>
+                <td className="text-left">
+                  {trimExtension(dataItem.Ad.ad_asset_path)}
+                </td>
+                <td className="flex items-center justify-center">
+                  <AdImage path={dataItem.Ad.ad_asset_path} />
+                </td>
+                <td className="text-center">{dataItem.impression_count}</td>
+                <td className="text-center">
+                  <div className="flex items-center justify-center gap-4">
+                    <h2 className="text-center">{dataItem.click_count}</h2>
+                    <MdDelete
+                      onClick={() => handleDelete(dataItem.id)}
+                      className="text-blue-500 cursor-pointer"
+                    />
+                  </div>
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>
       </div>
     </div>
   );
-};
-
+});
 
 export default AdsData;
-
-// table row
-const TableRow = React.memo(({ dataItem, index, handleDelete, serverUrl }) => (
-  <tr className={`w-11/12 h-10 ${index % 2 === 0 ? "bg-[#E0F1FB]" : "bg-white"}`}>
-    <td className="text-center">{dataItem.Registered_apk_key.app_name}</td>
-    <td className="text-left">{dataItem.Ad.app_link}</td>
-    <td className="text-left">{dataItem.Ad.ad_asset_path}</td>
-    <td className="flex items-center justify-center">
-      <div className="w-10">
-         <div className="w-11/12 mx-auto flex hover:scale-150 transition-transform transform-gpu duration-300">
-          <a href={`http://${serverUrl}/images/${dataItem.Ad.ad_asset_path}`} target="_blank">
-            <img src={`http://${serverUrl}/images/${dataItem.Ad.ad_asset_path}`} />
-          </a>
-         </div>
-      </div>
-      {/* <div className="w-10 bg-black">
-        <div className="flex items-center justify-center hover:scale-150 transition-transform transform-gpu duration-300">
-          <a href={`http://${serverUrl}/images/${dataItem.Ad.ad_asset_path}`} target="_blank">
-            <img src={`http://${serverUrl}/images/${dataItem.Ad.ad_asset_path}`} />
-          </a>
-        </div>
-      </div> */}
-    </td>
-    <td className="text-center">{dataItem.impression_count}</td>
-    <td className="text-center">
-      <div className="flex items-center justify-center">
-        <h2 className="text-center">{dataItem.click_count}</h2>
-        <span>
-          <MdDelete
-            onClick={() => handleDelete(dataItem.app_id, dataItem.Ad.ad_asset_path)}
-            className="text-blue-500 ml-2 cursor-pointer"
-          />
-        </span>
-      </div>
-    </td>
-  </tr>
-));

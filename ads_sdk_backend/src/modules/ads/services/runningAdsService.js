@@ -20,14 +20,28 @@ const runningAdsService = {
             if(!app_id || !adsListData || !Array.isArray(adsListData)) {
                 throw new Error('App ID and Ad Id list are required');
             }
-
             const runningAdData = adsListData.map(ad => ({
                 app_id: app_id,
                 ad_id: ad.id
             }));
-            return await runningAdsRepository.createMultipleRunningAds(runningAdData);
+            const result = await runningAdsRepository.createMultipleRunningAds(runningAdData);
+            return result;
         } catch(error){
             logger.error(`Service - Create Multiple Running Ads Error: ${error.message}`);
+            throw error;
+        }
+    },
+
+    async incrementImpressionCount(running_ad_id) {
+        try {
+            if (!running_ad_id) {
+                throw new Error('Running Ad ID is required');
+            }
+            const result = await runningAdsRepository.updateImpressionCount(running_ad_id);
+            console.log(result);
+            return result;
+        } catch (error) {
+            logger.error(`Service - Increment Impression Count Error: ${error.message}`);
             throw error;
         }
     },

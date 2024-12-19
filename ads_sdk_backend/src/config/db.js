@@ -2,7 +2,6 @@
 // Here we are connecting to the database
 // creating an initial connection without database to check if the DB is present or not
 // if not creating the DB only if the connection is successful but there is not db present here
-
 const { Sequelize } = require("sequelize");
 const {
   MYSQL_HOST,

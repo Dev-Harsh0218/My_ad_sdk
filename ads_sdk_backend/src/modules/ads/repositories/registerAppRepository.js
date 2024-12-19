@@ -1,7 +1,6 @@
 const Registered_apk_key = require("../models/Registered_apk_key");
 const logger = require('../../../core/utils/logger');
 
-
 const registerAppRepository = {
     async registerApp(appData) {
         try {

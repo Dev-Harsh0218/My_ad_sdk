@@ -1,5 +1,6 @@
 // src/AddAdsHandleData.js
 import React, { useEffect, useRef, useState } from "react";
+import {toast} from "react-hot-toast";
 import axios from "axios";
 import ImageUpload from "./ImageUpload";
 import { serverUrl } from "./const";
@@ -10,8 +11,8 @@ const AddAdsHandleData = () => {
   const [refreshRunningAdsComponent, setRefreshRunningAdsComponent] = useState(0);
   const [showRegisterApps, setShowRegisterApps] = useState([]);
   const [showRegisterAppsToggle, setShowRegisterAppsToggle] = useState(false);
-  const [apkUniqueKey, setApkUniqueKey] = useState();
-  const [adsListData, setAdsListData] = useState("");
+  const [apkUniqueKey, setApkUniqueKey] = useState('');
+  const [adsListData, setAdsListData] = useState();
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const wrapperRef = useRef(null);
@@ -20,7 +21,7 @@ const AddAdsHandleData = () => {
   const refreshAdsData = () => {
     setRefreshAdsImages((prev) => prev + 1);
   };
-
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -80,7 +81,6 @@ const AddAdsHandleData = () => {
 
   const handleSuggestionClick = (imageName) => {
     if (adsListData) {
-      // setAdsListData(`${adsListData},${imageName}`);
       setAdsListData([...adsListData, imageName]);
     } else {
       setAdsListData([imageName]);
@@ -108,6 +108,11 @@ const AddAdsHandleData = () => {
     setShowRegisterAppsToggle(false);
   };
 
+  const resetData = () => {
+    setAdsListData("");
+    setApkUniqueKey(null);
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -119,10 +124,12 @@ const AddAdsHandleData = () => {
         }
       );
       if (response.status === 201) {
-        console.log("Data inserted successfully");
-        alert("Data inserted successfully");
+        console.log(response.data);
+        // console.log("Data inserted successfully");
+        toast.success("Created running ads successfully")
       }
-      setRefreshRunningAdsComponent(1);
+      resetData();
+      setRefreshRunningAdsComponent(prev => (prev > 10)?0:prev+1);
     } catch (error) {
       console.error("Error inserting data:", error);
       alert("Error inserting data");
@@ -141,17 +148,13 @@ const AddAdsHandleData = () => {
               </label>
               <input
                 type="text"
-                value={apkUniqueKey ? apkUniqueKey.app_name : ""}
-                onFocus={() => {
-                  // console.log("Focus triggered here");
-                  setShowRegisterAppsToggle(true);
-                }}
+                value={apkUniqueKey ? apkUniqueKey.app_name : ''}
+                onFocus={() => {setShowRegisterAppsToggle(true)}}
                 onChange={(e) => setApkUniqueKey(e.target.value)}
                 required
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
               {showRegisterAppsToggle && showRegisterApps && (
-                // <div className="absolute h-72 overflow-scroll bg-white border border-gray-300 w-full mt-1 rounded-md shadow-lg z-10">
                 <div className="absolute h-72 overflow-scroll bg-white border border-gray-300 w-full mt-1 rounded-md shadow-lg z-10">
                   {showRegisterApps.map((item, index) => (
                     <div
@@ -186,11 +189,11 @@ const AddAdsHandleData = () => {
                   {suggestions.map((suggestion, index) => (
                     <div
                       key={index}
-                      className="px-4 py-2 cursor-pointer hover:bg-gray-200 border-b border-[#CFE1EE] border-1 flex items-center justify-between"
+                      className={`px-4 py-2 min-h-28 cursor-pointer ${index % 2 === 0 ? "bg-[#E0F1FB]" : "bg-white"} hover:bg-gray-200 border-b border-[#CFE1EE] border-1 flex items-center justify-between`}
                       onClick={() => handleSuggestionClick(suggestion)}
                     >
                       <div className="">{suggestion.ad_asset_path}</div>
-                      <div className="image-preview w-10 h-20">
+                      <div className="image-preview w-10">
                         <img
                           src={`http://${serverUrl}/images/${suggestion.ad_asset_path}`}
                           alt=""
@@ -202,10 +205,7 @@ const AddAdsHandleData = () => {
               )}
             </div>
             <div className="flex items-center justify-between">
-              <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
+              <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                 Submit
               </button>
             </div>

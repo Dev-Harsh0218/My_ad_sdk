@@ -44,6 +44,14 @@ const adController = {
         }
     },
 
+    async getRandomAd(req,res){
+        try{
+            const ad = await adService.getRandomAd();
+            res.status(200).json({ad: ad});
+        } catch (error){
+            res.status(500).json({error:"something went wrong"});
+        }
+    },
     async getAllAds(req,res){
         try{
             const ads = await adService.getAllAds();

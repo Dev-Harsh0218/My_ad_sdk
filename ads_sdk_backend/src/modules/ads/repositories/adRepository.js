@@ -1,5 +1,6 @@
 const Ad = require("../models/Ad_model");
 const logger = require('../../../core/utils/logger');
+const sequelize = require('sequelize');
 
 const adRepository = {
     async createAd(adData) {
@@ -27,6 +28,18 @@ const adRepository = {
             });
         } catch (error) {
             logger.error(`Get All Ads Error Repository: ${error.message}`);
+            throw error;
+        }
+    },
+
+    async getRandomAd(){
+        try{
+            return await Ad.findOne({
+                where: { deleted_at: null },
+                order: [sequelize.fn('RAND')]
+            })
+        } catch (error){
+            logger.error(`Get Random Ad Error Repository: ${error.message}`);
             throw error;
         }
     },

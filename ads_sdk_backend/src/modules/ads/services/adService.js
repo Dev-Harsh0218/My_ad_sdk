@@ -43,6 +43,15 @@ const adService = {
         }
     },
 
+    async getRandomAd(){
+        try{
+            return await adRepository.getRandomAd();
+        } catch(error){
+            logger.error(`Service - Get Random Ad Error: ${error.message}`);
+            throw error;
+        }
+    },
+
     async getAdById(id) {
         try {
             if (!id) {
