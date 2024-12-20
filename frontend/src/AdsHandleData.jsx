@@ -6,7 +6,7 @@ import ImageUpload from "./ImageUpload";
 import { serverUrl } from "./const";
 import AdsData from "./AdsData";
 
-const AddAdsHandleData = () => {
+const AddAdsHandleData = ({hardRefresh}) => {
   const [refreshAdsImages, setRefreshAdsImages] = useState(0);
   const [refreshRunningAdsComponent, setRefreshRunningAdsComponent] = useState(0);
   const [showRegisterApps, setShowRegisterApps] = useState([]);
@@ -64,7 +64,7 @@ const AddAdsHandleData = () => {
     };
     fetchImages();
   }, [refreshAdsImages]);
-
+  
   useEffect(() => {
     const fetchApps = async () => {
       try {
@@ -77,8 +77,13 @@ const AddAdsHandleData = () => {
       }
     };
     fetchApps();
-  }, []);
-
+  }, [hardRefresh]);
+  
+  useEffect(() => {
+    setRefreshAdsImages(prev=>prev+1);
+    setRefreshRunningAdsComponent(prev=>prev+1);
+  }, [hardRefresh]);
+  
   const handleSuggestionClick = (imageName) => {
     if (adsListData) {
       setAdsListData([...adsListData, imageName]);
@@ -87,7 +92,7 @@ const AddAdsHandleData = () => {
     }
     setShowSuggestions(false);
   };
-
+  
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
     const entries = inputValue.split(",").filter((entry) => entry.trim());

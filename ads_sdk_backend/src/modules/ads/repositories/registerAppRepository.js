@@ -1,6 +1,5 @@
 const Registered_apk_key = require("../models/Registered_apk_key");
 const logger = require('../../../core/utils/logger');
-
 const registerAppRepository = {
     async registerApp(appData) {
         try {
@@ -32,6 +31,42 @@ const registerAppRepository = {
             return app;
         } catch (error) {
             logger.error(`Get App By Package Name Error Repository: ${error.message}`);
+            throw error;
+        }
+    },
+    async incrementAppImpressionCount(id) {
+        try{
+            const result = await Registered_apk_key.increment('app_impressions', {
+                by: 1,
+                where: { app_id : id }
+            });
+            if(result[0][1] !== 1){
+                logger.error('Either App not or not updated yet');
+                throw new Error('Either App not or not updated yet');
+            }
+            else{
+                return {"message" : "success", id : id};
+            }
+        }catch(error){
+            logger.error(`Update Impression Count Error Repository: ${error.message}`);
+            throw error;
+        }
+    },
+
+    async incrementAppClickCount(id) {
+        try{
+            const result = await Registered_apk_key.increment('app_clicks', {
+                by:1,
+                where:{app_id : id}
+            });
+            if(result[0][1] !== 1){
+                logger.error('Either App not found or not updated yet');
+                throw new Error('Either App not found or not updated yet');
+            }else{
+                return {"message" : "success", id : id};
+            }
+        }catch (error){
+            logger.error(`Update Click Count Error Repository: ${error.message}`);
             throw error;
         }
     },

@@ -69,7 +69,14 @@ class AdsSdk {
       }),
     );
     if (response.statusCode == 200) {
-      debugPrint("Response: ${json.decode(response.body)['message']}");
+      final responseData = json.decode(response.body);
+      // debugPrint("Response: ${json.decode(response.body)['message']}");
+      // Handle both response structures
+      final appId = responseData['data'] is Map<String, dynamic> && responseData['data']['existing'] == true 
+          ? responseData['data']['data']['app_id']
+          : responseData['data']['app_id'];
+      AdsSdk.App_key = appId;
+      // debugPrint('\n============================================\n${AdsSdk.App_key}\n============================================\n');
     } else {
       debugPrint('Error Registering your app: ${response.body}');
     }
@@ -78,12 +85,13 @@ class AdsSdk {
   // Show modal at start
   static void showModalAtStart(BuildContext context) {
     if (_isInitialized) {
+      debugPrint('serverUrl here is $serverUrl and apkUniqueKey $apkUniqueKey');
       showDialog(
         context: context,
         useSafeArea: false,
         builder: (BuildContext context) {
           return AlertDialogueModal(
-              serverUrl: serverUrl, apkUniqueKey: apkUniqueKey);
+              serverUrl: serverUrl, apkUniqueKey: apkUniqueKey,app_id: AdsSdk.App_key);
         },
       );
     } else {

@@ -1,5 +1,4 @@
 const runningAdsService = require('../services/runningAdsService');
-
 const runningAdsController = {
     async createRunningAd(req, res) {
         try {
@@ -36,6 +35,27 @@ const runningAdsController = {
         }
     },
 
+    async getRandomAdByApkUniqueKey(req,res){
+        try{
+            const {apk_unique_key} = req.query;
+            const ad = await runningAdsService.getRandomAdByApkUniqueKey(apk_unique_key);
+            const transformedResponse ={
+                randomImage: ad.Ad.ad_asset_path,
+                appurl: ad.Ad.app_link,
+                ad_id: ad.id
+            }
+            res.status(200).json({
+                message: "success",
+                data: transformedResponse
+            });
+        }catch(error){
+            res.status(400).json({
+                success: false,
+                error: error.message
+            });
+        }
+    },
+
     async getAllRunningAds(req, res) {
         try{
             const ads = await runningAdsService.getAllRunningAds();
@@ -55,12 +75,27 @@ const runningAdsController = {
         try{
             const {running_ad_id} = req.body;
             const result = await runningAdsService.incrementImpressionCount(running_ad_id);
-            console.log(result);
             res.status(200).json({
                 success: true,
                 data: result
             });
         }catch (error){
+            res.status(400).json({
+                success: false,
+                error: error.message
+            });
+        }
+    },
+
+    async incrementClickCount(req,res){
+        try{
+            const {running_ad_id} = req.body;
+            const result = await runningAdsService.incrementClickCount(running_ad_id);
+            res.status(200).json({
+                success: true,
+                data: result
+            });
+        } catch (error){
             res.status(400).json({
                 success: false,
                 error: error.message

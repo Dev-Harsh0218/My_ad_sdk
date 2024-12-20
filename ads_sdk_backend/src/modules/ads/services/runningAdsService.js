@@ -1,5 +1,7 @@
 const runningAdsRepository = require("../repositories/runningAdsRepository");
 const logger = require('../../../core/utils/logger');
+const adRepository = require("../repositories/adRepository");
+const registerAppRepository = require('../repositories/registerAppRepository');
 
 const runningAdsService = {
     async createRunningAd(runningAdData) {
@@ -33,15 +35,45 @@ const runningAdsService = {
     },
 
     async incrementImpressionCount(running_ad_id) {
+        if (!running_ad_id) {
+            throw new Error('Running Ad ID is required');
+        }
         try {
-            if (!running_ad_id) {
-                throw new Error('Running Ad ID is required');
+            //get the running ad details to access app_id and ad_id
+            const running_ad = await runningAdsRepository.getRunningAdById(running_ad_id);
+            if (!running_ad || !running_ad.is_active) {
+                throw new Error('Running Ad not found or inactive');
             }
-            const result = await runningAdsRepository.updateImpressionCount(running_ad_id);
-            console.log(result);
+            // console.log("===============================================\n",`Running Ad ID: ${running_ad_id}, App ID: ${running_ad.app_id}, Ad ID: ${running_ad.ad_id}`,"\n======================================");
+            const result = await Promise.all([
+                runningAdsRepository.incrementRuningAdImpressionCount(running_ad_id),
+                adRepository.incrementAdImpressionCount(running_ad.ad_id),
+                registerAppRepository.incrementAppImpressionCount(running_ad.app_id)
+            ]);
             return result;
         } catch (error) {
             logger.error(`Service - Increment Impression Count Error: ${error.message}`);
+            throw error;
+        }
+    },
+    async incrementClickCount(running_ad_id) {
+        if (!running_ad_id) {
+            throw new Error('Running Ad ID is required');
+        }
+        try {
+            const running_ad = await runningAdsRepository.getRunningAdById(running_ad_id);
+            if (!running_ad || !running_ad.is_active) {
+                throw new Error('Running Ad not found or inactive');
+            }
+            // console.log("===============================================\n",`Running Ad ID: ${running_ad_id}, App ID: ${running_ad.app_id}, Ad ID: ${running_ad.ad_id}`,"\n======================================");
+            const result = await Promise.all([
+                runningAdsRepository.incrementRunningAdClickCount(running_ad_id),
+                adRepository.incrementAdClickCount(running_ad.ad_id),
+                registerAppRepository.incrementAppClickCount(running_ad.app_id)
+            ])
+            return result;
+        } catch (error) {
+            logger.error(`Service - Increment Click Count Error: ${error.message}`);
             throw error;
         }
     },
@@ -54,7 +86,18 @@ const runningAdsService = {
             throw error;
         }
     },
-
+    
+    async getRandomAdByApkUniqueKey(app_id) {
+        if (!app_id) {
+            throw new Error('Apk Unique Key is required');
+        }
+        try {
+            return await runningAdsRepository.getRandomAdByApkUniqueKey(app_id);
+        } catch (error) {
+            logger.error(`Service - Get Random Ad By Apk Unique Key Error: ${error.message}`);
+            throw error;
+        }  
+    },
     async getRunningAdsByAppId(appId) {
         try {
             if (!appId) {

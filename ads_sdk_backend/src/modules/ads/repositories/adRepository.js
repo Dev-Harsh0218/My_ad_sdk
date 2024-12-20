@@ -43,6 +43,44 @@ const adRepository = {
             throw error;
         }
     },
+    
+    async incrementAdImpressionCount(id) {
+        try{
+            const result = await Ad.increment('impression_count', {
+                by: 1,
+                where: { id }
+            });
+            if(result[0][1] !== 1){
+                logger.error('Either Ad not or not updated yet');
+                throw new Error('Either Ad not or not updated yet');
+            }
+            else{
+                return {"message" : "success", id : id};
+            }
+        } catch(error){
+            logger.error(`Increment Impression Count Error Repository: ${error.message}`);
+            throw error;
+        }
+    },
+
+    async incrementAdClickCount(id) {
+      try{
+        const result = await Ad.increment('click_count', {
+          by: 1,
+          where: { id }
+        });
+        if(result[0][1] !== 1){
+          logger.error('Either Ad not found or not updated yet');
+          throw new Error('Either Ad not found or not updated yet');
+        }
+        else{
+          return {"message" : "success", id : id};
+        }
+      } catch(error){
+        logger.error(`Increment Click Count Error Repository: ${error.message}`);
+        throw error;
+      }
+    },
 
     async getAdById(id) {
         try {

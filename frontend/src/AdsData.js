@@ -106,8 +106,7 @@ const AdsData = memo(({ refresh }) => {
                 key={index}
                 className={`w-[80%] ${
                   index % 2 === 0 ? "bg-[#E0F1FB]" : "bg-white"
-                }`}
-              >
+                }`}>
                 <td className="text-center">
                   {dataItem.Registered_apk_key.app_name}
                 </td>
