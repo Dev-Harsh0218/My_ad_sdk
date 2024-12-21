@@ -56,6 +56,7 @@ const runningAdsService = {
             throw error;
         }
     },
+    
     async incrementClickCount(running_ad_id) {
         if (!running_ad_id) {
             throw new Error('Running Ad ID is required');
@@ -98,6 +99,7 @@ const runningAdsService = {
             throw error;
         }  
     },
+
     async getRunningAdsByAppId(appId) {
         try {
             if (!appId) {

@@ -1,9 +1,9 @@
-import 'dart:convert';
+// import 'dart:convert';
 import 'package:ads_sdk_application/ads/ApiController.dart';
 import 'package:ads_sdk_application/ads/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 class AlertDialogueModal extends StatefulWidget {

@@ -18,4 +18,5 @@ router.put('/increment-ad-impression',runningAdsController.incrementImpressionCo
 router.put('/increment-ad-click',runningAdsController.incrementClickCount);
 //get a random ad based on apkUniquekey
 router.get('/apkUniqueKey-get-random-ad',runningAdsController.getRandomAdByApkUniqueKey);
+
 module.exports = router;
